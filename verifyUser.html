@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify User</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.0.2/semantic.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.0.2/semantic.min.js"></script>
+
+    <link href="main.css" rel="stylesheet" />
+    <link href="dir/css/login.css" rel="stylesheet" />
+    <link href="dir/css/navbar.css" rel="stylesheet" />
+    <link href="dir/css/register.css" rel="stylesheet" />
+    <link href="dir/css/home.css" rel="stylesheet" />
+
+    <link href="dir/css/createpost.css" rel="stylesheet" />
+
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Cache-control" content="No-Cache">
+    <script>
+        $(document).ready(function () {
+            $("#navbar").load('dir/html/navbar.html');
+            email = location.href.split('?')[1];
+            GetFiles(["Users.json", "Posts.json"], function () {
+                for (var i = 0; i < Users.length; i++) {
+                    var tempUser = Users[i];
+                    if (tempUser.email == email) {
+                        $.ajax({
+                            url: server + "api/studenttostudentapi/VerifyUser/abc",
+                            type: 'POST',
+                            data: tempUser.userID,
+                            async: false,
+                            cache: false,
+                            timeout: 30000,
+                            error: function () {
+                                return true;
+                            },
+                            success: function (result) {
+
+                                if (result != null) {
+
+                                } else {
+
+                                    alert("Opps, something went wrong. Refresh page.");
+                                }
+
+                            }
+
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+
+    <div id="navbar"></div>
+    <div id="mainBody">
+
+        <center>
+            <h1>Verify Success</h1>
+
+            <h2>Thank you for verifying your email with <b><u>Student4Student.</u></b> </h2>
+            <div class="ui large teal button" id="btn" onclick="LoadPage('dir/html/login.html')">Login</div>
+        </center>
+    </div>
+
+    <script src="dir/js/login.js"></script>
+    <script src="dir/js/navbar.js"></script>
+    <script src="dir/js/register.js"></script>
+    <script src="dir/js/createpost.js"></script>
+    <script src="dir/js/home.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

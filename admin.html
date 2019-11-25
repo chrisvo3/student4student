@@ -1,0 +1,563 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Student4Student</title>
+
+
+    <script src="jquery.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.11/semantic.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.11/semantic.min.css" rel="stylesheet" type="text/css" />
+    <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/icon.min.css'>
+
+    <link href="main.css" rel="stylesheet" />
+ 
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Cache-control" content="No-Cache">
+
+    <style>
+        .content,.title{
+            background-color:whitesmoke;
+        }
+    </style>
+
+</head>
+<body>
+    <center>
+        <h1>Admin Page</h1>
+    </center>
+
+
+
+    <div class="ui modal editPostModal">
+        <i style="visibility:hidden" class="sellerID" id=""></i>
+        <i class="close icon"></i>
+        <div class="header" id="itemNamee">
+            Edit Post
+        </div>
+        <div class="image content">
+            <div class="ui medium image">
+                <div class="ui special cards ">
+                    <a class="card" style="width:160px;">
+                        <div class="blurring dimmable small image">
+                            <div class="ui dimmer">
+                                <div class="content">
+                                    <div class="center">
+                                        <button class="ui inverted blue labeled icon button" onclick="TriggerFileUpload('changePost')">
+                                            <i class="upload icon"></i>
+                                            Upload
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <img id="imgPost" class="itemImage" style="width:226px;height:169px;">
+                        </div>
+                    </a>
+                </div>
+            </div>
+        
+            <div class="description" style="width:100%;">
+                <div id="userLink" style="width: fit-content;">
+                    <div class="ui avatar small image" style="width:4em !important; height:4em !important;">
+                        <img src="" class="sellerImg" style="width:4em !important; height:4em !important;">
+                    </div>
+                    <span id="sellerUsername" style="font-size:14pt;font-weight:bold;"></span>
+                    <span id="campus"></span>
+
+                </div>
+                <br />
+                <hr style="width:100%;" />
+                <p id="descriptionn"</p>
+
+            </div>
+
+            <div class="ui styled fluid accordion">
+                <div class="active title">
+                    <i class="dropdown icon"></i>
+                    Item Name
+                </div>
+                <div class="active content">
+                    <div class="ui input">
+                        <input type="text" id="itemName">
+                    </div>
+                    <button class="ui inverted blue labeled icon button" onclick="UpdatePost()">
+                        <i class="upload icon"></i>
+                        Update
+                    </button>
+                </div>
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    Price
+                </div>
+                <div class="content">
+                    <div class="ui input">
+                        <input type="text" id="price">
+                    </div>
+                    <button class="ui inverted blue labeled icon button" onclick="UpdatePost()">
+                        <i class="upload icon"></i>
+                        Update
+                    </button>
+                </div>
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    Category
+                </div>
+                <div class="content">
+                    <div class="ui input">
+                        <input type="text" id="cat">
+                    </div>
+                    <button class="ui inverted blue labeled icon button" onclick="UpdatePost()">
+                        <i class="upload icon"></i>
+                        Update
+                    </button>
+                </div>
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    Description
+                </div>
+                <div class="content">
+                    <textarea id="description" style="overflow:hidden;border-radius:6px;color:black;width:100%;height:75px;"></textarea>
+                    <button class="ui inverted blue labeled icon button" onclick="UpdatePost()">
+                        <i class="upload icon"></i>
+                        Update
+                    </button>
+                </div>
+
+
+            </div>
+
+
+            <br />
+
+
+        </div>
+        <div class="actions">
+            <div class="ui black deny button">
+                Nevermind
+            </div>
+            <div class="ui red  button" onclick="DeletePost()">
+                Delete Post
+            </div>
+        </div>
+    </div>
+
+     <div class="ui styled fluid accordion">
+                                <div class="title active">
+                                    <i class="dropdown icon"></i>
+                                    Posts
+                                </div>
+                                <div class="content active ">
+                                        <div class="row">
+                    <div class="sixteen wide column">
+        <div class="ui link cards" id="cataCards">        
+        </div>
+      </div>
+    </div>
+                                </div>
+                                 <div class="title active">
+                                    <i class="dropdown icon"></i>
+                                    Users
+                                </div>
+                                <div class="content active">
+                                    <div class="row">
+                                        <div class="sixteen wide column">
+                                            <div class="ui link cards" id="cataUsers">        
+                                            </div>
+                                        </div>
+                                    </div>
+    
+                                </div>
+                            </div>
+</body>
+</html>
+<script type="text/javascript">
+    var Users = [];
+    var Posts = [];
+    var server = "https://student4student.azurewebsites.net/";
+    function GetFiles(files, callBack) {
+    $.getJSON(server + files[0]).done(function (data){
+        Users = data;
+        console.log(Users);
+        $.getJSON(server + files[1]).done(function (data){
+            Posts = data;
+            console.log(Posts);
+            callBack();
+        });
+    });
+}
+
+function cataLoad() { 
+    GetFiles(["Users.json", "Posts.json"], function() {
+        $( "#cataCards" ).empty();
+        for(i = 0; i < Posts.length; i++){
+            var card = document.createElement("a");
+            card.className = "ui centered raised blue card PostCard";
+            card.id = Posts[i].postID;
+            var cataDiv = document.getElementById("cataCards");
+            cataDiv.appendChild(card);
+
+            var image = document.createElement("div");
+            image.className = "image";
+            card.appendChild(image);
+
+            var imageSRC = document.createElement("img");
+            imageSRC.src = "" + Posts[i].imageURL;
+            image.appendChild(imageSRC);
+
+            var content = document.createElement("div");
+            content.className = "content";
+            card.appendChild(content);
+
+            var header = document.createElement("div");
+            header.className = "header";
+            var headerText = document.createTextNode("" + Posts[i].title);
+            header.appendChild(headerText);
+            content.appendChild(header);
+
+            var meta = document.createElement("div");
+            meta.className = "meta";
+            content.appendChild(meta);
+
+            var category = document.createElement("a");
+            var catText = document.createTextNode("" + Posts[i].category.charAt(0).toUpperCase() + Posts[i].category.slice(1));
+            category.appendChild(catText);
+            meta.appendChild(category);
+
+            var description = document.createElement("div");
+            description.className = "description";
+            var descText = document.createTextNode("" + Posts[i].description);
+            description.appendChild(descText);
+            content.appendChild(description);
+
+            var extracontent = document.createElement("div");
+            extracontent.className = "extra content";
+            card.appendChild(extracontent);
+
+            var date = document.createElement("span");
+            date.className = "right floated";
+            var dateText = document.createTextNode("" + Posts[i].datePosted);
+            date.appendChild(dateText);
+            extracontent.appendChild(date);
+
+            var price = document.createElement("span");
+            price.className = "left floated";
+            var priceText = document.createTextNode("$" + Posts[i].price);
+            price.appendChild(priceText);
+            extracontent.appendChild(price);
+        }
+        $( "#cataUsers" ).empty();
+        for(i = 0; i < Users.length; i++) {
+            var card = document.createElement("a");
+            card.className = "ui centered raised blue card homePostCard";
+            card.style = "width:250px";
+            card.id = i;
+            var cataDiv = document.getElementById("cataUsers");
+            cataDiv.appendChild(card);
+
+            var image = document.createElement("div");
+            //image.style = "height:200px;width:200px";
+            image.className = "image";
+            card.appendChild(image);
+
+            var imageSRC = document.createElement("img");
+            imageSRC.style = "height:200px;width:250px";
+            imageSRC.src = "" + Users[i].profileImageURl;
+            image.appendChild(imageSRC);
+
+            var content = document.createElement("div");
+            content.className = "content";
+            card.appendChild(content);
+
+            var header = document.createElement("div");
+            header.className = "center aligned header";
+            var headerText = document.createTextNode("" + Users[i].username);
+            header.appendChild(headerText);
+            content.appendChild(header);
+
+            var description = document.createElement("div");
+            description.className = "center aligned description";
+            var descName = document.createTextNode("Name: " + Users[i].fullName);
+            var descId = document.createTextNode("User ID: " + Users[i].userID);
+            var descEmail = document.createTextNode("Email: " + Users[i].email);
+            var descUni = document.createTextNode("University: " + Users[i].university);
+
+            description.appendChild(descName);
+            description.appendChild(br());
+            description.appendChild(descEmail);
+            description.appendChild(br());
+            description.appendChild(descId);
+            description.appendChild(br());
+            description.appendChild(descUni);
+
+            var modAct = document.createElement("div");
+            modAct.className = "extra content";
+            card.appendChild(modAct);
+
+            var banUser = document.createElement("span");
+            banUser.className = "ui labeled icon button banbutton";
+            banUser.setAttribute('id', Users[i].email);
+            var banIcon = document.createElement("i");
+            banIcon.className = "ban icon";
+            if(Users[i].ban == "1"){
+                banUser.className = "ui labeled icon button banbutton disabled";
+            }
+            banIcon.style.color = "red";
+            var banText = document.createTextNode("Ban");
+            banUser.appendChild(banText);
+            banUser.appendChild(banIcon);
+            modAct.appendChild(banUser);
+
+            var warnUser = document.createElement("span");
+            warnUser.className = "ui labeled icon button warnbutton";
+            warnUser.setAttribute('id', Users[i].email);
+            warnUser.style = "width:110px";
+            var warnIcon = document.createElement("i");
+            warnIcon.className = "exclamation icon";
+            var warnText = document.createTextNode("Warn");
+            warnUser.appendChild(warnText);
+            warnUser.appendChild(warnIcon);
+            modAct.appendChild(warnUser);
+
+            content.appendChild(description);
+        }
+        $('.warnbutton').click(function () {
+            var email = this.id;
+            var msg = "You account has been flagged for violating website rules. This message serves as a warning";
+            var data = "2|sep|" + email + "|sep|student4student@student4student.com|sep|student4student@student4student.com|sep|Warning from student4student|sep|" + msg;
+            var url = 'http://musicmaestromoe.azurewebsites.net/api/MailerAPI/sendEmail';
+
+            $.post(url, data, function (res) {
+                if (res == "good") {
+                    alert("Warning sent");
+                    window.location.reload();
+                    //$rootScope.ShowToast("✔ Thank you for your message!", "limegreen");
+                }
+                else {
+                    //    $rootScope.ShowToast("Sorry, something went wrong. Try again", "darkred");
+                }
+            });
+        });
+        $('.banbutton').click(function(){
+            var email = this.id;
+            var msg = "You account has been flagged for violating website rules. Your account has been locked.";
+            var data = "2|sep|" + email + "|sep|student4student@student4student.com|sep|student4student@student4student.com|sep|Message from student4student|sep|" + msg;
+            var url = 'http://musicmaestromoe.azurewebsites.net/api/MailerAPI/sendEmail';
+
+            $.post(url, data, function (res) {
+                if (res == "good") {
+                    alert("Ban message sent");
+                } else {
+
+                }
+                 });
+               $.ajax({
+                    url: server + "api/studenttostudentapi/BanUser/abc",
+                    type: 'POST',
+                    data: email,
+                    async: false,
+                    cache: false,
+                    timeout: 30000,
+                    success: function (result) {
+
+                        if (result == "good") {
+                            alert("User has been banned");
+                            window.location.reload();
+                        }
+                        else {
+                            alert("Something went wrong");
+                    }
+                }
+                }); //end data pushing
+        });
+
+        $('.PostCard').click(function () {
+
+            $('.editPostModal').modal('show');
+
+            postID = $(this).attr('id');
+            var PostSelected = {};
+            for (var i = 0; i < Posts.length; i++) {
+                if (Posts[i].postID == postID) {
+                    PostSelected = Posts[i];
+                }
+            }
+            document.getElementById("itemName").value = PostSelected.title;
+            document.getElementById("price").value = PostSelected.price;
+            document.getElementById("cat").value = PostSelected.category;
+            document.getElementById("description").innerHTML = PostSelected.description;
+            $("#imgPost").attr('src', PostSelected.imageURL);
+
+            var sellerUser = [];
+            for (var i = 0; i < Users.length; i++) {
+                if (Users[i].userID == PostSelected.sellerID) {
+                    sellerUser = Users[i];
+                    break;
+                }
+            }
+            document.getElementById("itemNamee").innerHTML = PostSelected.title + " - $" + PostSelected.price;
+            document.getElementById("sellerUsername").innerHTML = sellerUser.username + " ";
+            document.getElementById("descriptionn").innerHTML = PostSelected.description;
+            document.getElementById("campus").innerHTML = "From: " + sellerUser.university;
+            $(".sellerID").attr("id", sellerUser.userID);
+            $(".sellerImg").attr('src', sellerUser.profileImageURl);
+
+
+            $("#userLink").click(function () {
+                var userID = $(".sellerID").attr("id");
+                setCookie('userID', userID);
+                LoadPage("dir/html/viewprofile.html");
+                $(".homeModal").modal('hide all');
+            })
+
+        });
+    });
+}
+
+    $(document).ready(function () {
+    $('.ui .accordion').accordion();
+    cataLoad();
+    $(".editPostModal").modal({ detachable: false }, { onDeny: function () { $('.ui.modal').modal('hide'); } }, { blurring: true });
+
+
+    });
+
+    function DeletePost() {
+
+        $.ajax({
+            url: server + "api/studenttostudentapi/DeletePost/abc",
+            type: 'POST',
+            data: postID,
+            async: false,
+            cache: false,
+            success: function (result) {
+
+                if (result == "good") {
+
+                    alert("post deleted");
+                    $(".editPostModal").modal('hide all');
+                    getUserPosts();
+
+                } else {
+
+                    alert("error, post not deleted");
+                }
+
+            }
+        });
+    }
+
+    function TriggerFileUpload(val) {
+        $("#" + val).trigger("click");
+
+    }
+
+    function readURL(input, val) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                myProfileImg
+
+                if (val == 'changeProfile') {
+                    $('#myProfileImg').attr('src', e.target.result);
+
+                    $('#myProfileImg').hide();
+                    $('#myProfileImg').fadeIn(650);
+                }
+                else {
+                    $('#imgPost').attr('src', e.target.result);
+
+                    $('#imgPost').hide();
+                    $('#imgPost').fadeIn(650);
+                }
+
+
+            }
+            reader.readAsDataURL(input.files[0]);
+            var fu = '#' + val;
+            var name = '';
+            if (val == 'changeProfile') {
+
+                name = 'users/' + JSON.parse(getCookie('user')).userID + '.jpg';
+            }
+            else {
+                name = postID + ".png";
+            }
+            alert(name);
+            UploadImages(fu, name);
+        }
+    }
+
+
+
+    function UploadImages(fu, name) {
+
+        files = $(fu).get(0).files;
+
+        if (files[0] != undefined) {
+            var data = new FormData();
+
+
+            data.append("name", name);
+
+            data.append("UploadedImage", files[0]);
+
+
+            var ajaxRequest = $.ajax({
+                type: "POST",
+                url: server + "api/studenttostudentapi/UploadImage/post",
+                contentType: false,
+                processData: false,
+                data: data
+            });
+
+            ajaxRequest.done(function (xhr, textStatus) {
+                if (xhr == "good") {
+                    alert('upload success');
+                }
+                else {
+                    alert("error uploading image");
+
+                }
+            });
+
+
+        }
+
+    }
+    function UpdatePost() {
+        var title = document.getElementById("itemName").value;
+        var price = document.getElementById("price").value;
+        var cat = document.getElementById("cat").value;
+        var description = document.getElementById("description").value;
+
+        if (title != "" && price != "" && cat != "" && description != "") {
+            var data = postID + "|sep|" + title + "|sep|" + price + "|sep|" + description + "|sep|" + cat;
+            $.ajax({
+                url: server + "api/studenttostudentapi/EditPost/abc",
+                type: 'POST',
+                data: data,
+                async: false,
+                cache: false,
+                success: function (result) {
+                    if (result != null) {
+
+                        alert("Update Success");
+
+                    } else {
+
+                        alert("error, update failed");
+                    }
+
+                }
+            });
+        }
+        else {
+            alert("Can't leave anything empty");
+        }
+    }
+
+    function br() {
+        return document.createElement('br');
+    }
+</script>
