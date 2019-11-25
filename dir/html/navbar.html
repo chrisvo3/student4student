@@ -1,0 +1,67 @@
+﻿<div class="ui container" >
+    <div class="ui grid centered">
+        <div class="row">
+            <div class="sixteen wide column">
+                <div id="navbar">
+                    <div class="ui stackable menu navMenu">
+                        <div class="item">
+                            <img src="StudentToStudentLogo.png">
+                        </div>
+                        <a class="item" onclick="LoadPage('dir/html/home.html')">
+                            Home
+                        </a>
+                        <a class="item loginMenu" style="display:none;" onclick="LoadPage('dir/html/inbox.html')">
+                            Inbox
+                        </a>
+ 
+                        <a class="item loginLink" onclick="LoadPage('dir/html/login.html')">
+                            Login
+                        </a>
+                        <a class="item loginLink"   onclick="LoadPage('dir/html/register.html')">
+                            Register
+                        </a>
+                        <a class="item loginMenu" style="display:none;" onclick="LoadPage('dir/html/createpost.html')">
+                            Create Post
+                        </a>
+                        <div class="right menu loginMenu" style="display:none;">
+                            <a class="item" id="username" onclick="LoadPage('dir/html/myprofile.html')"></a>
+                            <a class="item" onclick="logOut()" >Log Out</a>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+    //     if ($(window).width() > 992) {
+    //         $(".navMenu").removeClass('vertical');
+    //     }
+    //     else {
+
+    //         $(".navMenu").addClass('vertical fluid');
+
+    //     }
+    //     $(window).resize(function () {
+    //         if ($(window).width() > 992) {
+    //             $(".navMenu").removeClass('vertical');
+    //         }
+    //         else {
+
+    //             $(".navMenu").addClass('vertical fluid');
+
+    //         }
+    //     })
+        if (getCookie('user') != '') {
+            var userLoggedIn = JSON.parse(getCookie('user'));
+            console.log(userLoggedIn);
+
+            document.getElementById("username").innerHTML = userLoggedIn.username;
+            $(".loginMenu").css('display', 'flex');
+            $(".loginLink").css('display', 'none');
+        }
+    });
+</script>

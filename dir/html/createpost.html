@@ -1,0 +1,76 @@
+﻿<div class="ui container">
+    <div class="ui grid centered">
+        <div class="row">
+            <div class="sixteen wide left aligned column">
+                <div class="ui raised secondary segment" id="newPost">
+                    <div>
+                        <h3>Create New Post</h3>
+                        <div class="ui stacked form">    
+                            <div class="required field">
+                                <div class="field">
+                                    <label>Title</label>
+                                    <input type="text" name="title" placeholder="New Post" />
+                                </div>
+                            </div>
+                            <div class="required field">
+                                <div class="field">
+                                    <label>Price</label>
+                                    <input type="number" name="price" placeholder="0.00">
+                                </div>
+                            </div>
+                            <div class="required field">
+                                <div class="field">
+                                    <label>Category</label>
+                                    <input type="text" name="category" placeholder="Book, Furniture, etc.">
+                                </div>
+                            </div>
+                            <div class="required field">
+                                <div class="field">
+                                    <label>Description</label>
+                                    <input type="text" name="description" placeholder="A brief description of the item">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Image</label>
+                                <div class="ui special cards ">
+                                    <a class="card" style="width:160px;">
+                                        <div class="blurring dimmable small image">
+                                            <div class="ui dimmer">
+                                                <div class="content">
+                                                    <div class="center">
+                                                        <button class="ui inverted blue labeled icon button" onclick="TriggerFileUploadCreatePost()">
+                                                            <i class="upload icon"></i>
+                                                            Upload
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <img src="https://student4student.azurewebsites.net/images/empty.png" id="postImg">
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <br/>
+                            <center>
+                                <img src="../../loading.gif" id="loading" style="width: 100px;" hidden/><br/>
+                                <div class="ui  large teal button" onclick="CreatePost()">Submit</div>
+                            </center>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="file" onchange="readURL(this)" id="memberUpload" accept="image/*" hidden>
+<script>
+
+    $(document).ready(function () {
+
+        $('.special.cards .image').dimmer({
+            on: 'hover'
+        });
+    })
+
+</script>

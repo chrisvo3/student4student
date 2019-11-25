@@ -1,0 +1,135 @@
+﻿<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0" />
+
+<div class="ui container">
+    <div class="ui grid centered">
+        <div class="row">
+            <div class="sixteen wide left aligned column">
+                <div class="ui raised secondary segment">
+
+<!--top-->
+<div class="ui segments" id="topmsgbox">
+    <h2 class="msgHeader">Messaging</h2>
+
+    <!--nested-->
+    <div class="ui segments" id="nestmsgbox">
+
+        <!--nestedtop-->
+        <div class="ui segment" id="nesttop">
+            <!--info header-->
+            <div class="ui header" id="infoheader">
+                <img src="" id="msgImg" class="ui circular image">
+                <div class="content">
+                    <a id="senderName"></a>
+                    <div class="sub header" id="lastMsgTime"></div>
+                </div>
+            </div>
+        </div>
+
+        <!--nestedmiddle-->
+        <div class="ui segment" id="nestmiddle">
+            <ul id="msgs">
+
+            </ul>
+        </div>
+
+        <!--nestedbottom-->
+        <div class="ui segment" id="nestbottom">
+
+            <div class="ui fluid action input">
+                <textarea id="reply" type="text" placeholder="Type your message here..." />
+                <button id="btnSend" type="submit" name="search" value="Send" style="float: right" onclick="sendMessage()">SEND</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    </div>
+<!--dont-->
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        LoadMessages();
+    });
+
+    function sendMessage() {
+        var reply = document.getElementById("reply").value;
+        if (reply == "" && reply == undefined) {
+            alert('Message cant be empty');
+            return;
+        }
+        else {
+            var convoID = getCookie('convoID');
+            var userID = JSON.parse(getCookie('user')).userID;
+            var data = convoID + "|" + reply + "|" + userID;
+            $.ajax({
+                url: server + "api/studenttostudentapi/CreateNewMessage/abc",
+                type: 'POST',
+                data: data,
+                async: false,
+                cache: false,
+                success: function (result) {
+
+                    if (result == "good") {
+
+                        //alert("message sent");
+                        LoadMessages();
+
+                    } else {
+                        alert("message not ssent");
+
+
+                    }
+
+                }
+            });
+
+        }
+    }
+
+    function LoadMessages() {
+        $("#msgs").empty();
+        var convoID = getCookie('convoID');
+        var userID = JSON.parse(getCookie('user')).userID;
+        var senderImg = getCookie('senderImg');
+        $("#msgImg").attr('src', senderImg);
+        $.get(server + 'api/studenttostudentapi/GetConvoMessages/' + convoID+'|'+userID, function (data) {
+            console.log(data);
+            var allMsgs = data.split('>');
+            for (var i = 0; i < allMsgs.length -1; i++) {
+                var msg = allMsgs[i].split('<');
+
+                var mesaage = msg[0];
+                var time= msg[1];
+                var username= msg[2];
+                var userMsgID = msg[3];
+                var span = '';
+                if(userMsgID == userID){
+                    span = "  <li class='usaid'>" + mesaage + "</li>";
+                }
+                else {
+                    span = " <li class='whosaid'>" + mesaage + "</li>";
+                }
+
+                document.getElementById('msgs').innerHTML += span;
+
+                document.getElementById('lastMsgTime').innerHTML = 'Last message sent at ' + time;
+                document.getElementById('senderName').innerHTML = username;
+            }
+
+        });
+
+        var objDiv = document.getElementById("msgs");
+
+        setTimeout(function () {
+            objDiv.scrollTop = objDiv.scrollHeight;
+        }, 500);
+
+    }
+
+</script>

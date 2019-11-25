@@ -1,0 +1,85 @@
+﻿<script>
+    $(document).ready(function () {
+        LoadDDL();
+    });
+</script>
+<div class="ui container">
+    <div class="ui grid centered">
+        <div class="row">
+            <div class="ten wide computer fifteen wide mobile center aligned column">
+              <img class="ui small centered image" src="StudentToStudentLogo.png">
+              <h2 class="ui image header">
+                <div class="content">
+                  Register for an account
+                </div>
+              </h2>
+            </div>
+          </div>
+        <div class="sixteen wide column">
+            <div class="ui stacked secondary segment" id="regForm"> 
+                <div class="row">
+                    <p>(*) fields are required to be filled.</p>
+                </div>
+                <div class="row"> 
+                    <div class="ui form warning" >
+                      <div class="equal width fields">
+                        <div class="field">
+                          <label>First name <span>*</span></label>
+                          <input type="text" placeholder="First Name" id="first">
+                        </div>
+                        <div class="field">
+                          <label>Middle name</label>
+                          <input type="text" placeholder="Middle Name" id="middle">
+                        </div>
+                        <div class="field">
+                          <label>Last name <span>*</span></label>
+                          <input type="text" placeholder="Last Name" id="last">
+                        </div>
+                        <div class="field">
+                          <label>Username <span>*</span></label>
+                          <input type="text" placeholder="Username" id="un">
+                        </div>
+                        <div class="field">
+                          <label>Password <span>*</span></label>
+                          <input type="password" placeholder="*****" id="pw">
+                        </div>
+                        <div class="field">
+                          <label>Retype Password <span>*</span></label>
+                          <input type="password" placeholder="*****" id="repw">
+                        </div>
+                      </div>
+                    <div class="field">
+                        <label>University: <span>*</span></label>
+                        <select class="ui dropdown" id="ddlUniversities" onchange="popualteLink()">
+                            <option value="">Select University</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>E-mail <span>*</span></label>
+                        <input type="email" placeholder="name@school.edu" id="email">
+                    </div>
+                    <div class="ui warning message">
+                        <div class="header">Reminder!</div>
+                        <ul class="list">
+                          <li>Your e-mail must be a student email (example: name@school.edu), and you must verify your e-mail.</li>
+                        </ul>
+                    </div>
+                    <div class="ui large teal submit button" id='validate' onclick="register()">Submit</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div id="regSuccess" style="visibility:hidden">
+                    <center>
+                        <h1>Register Success</h1>
+
+                        <h2>Thank you <span id="regName"></span>, for registering with <b><u>Student4Student.</u></b> </h2>
+                        <h2>Your last step is to verify your email address <span id="regEmail"></span></h2>
+                        <h3><a id="schoolPortal"></a></h3>
+                    </center>
+
+                </div>
+            </div>
+        </div>   
+    </div>
+</div>

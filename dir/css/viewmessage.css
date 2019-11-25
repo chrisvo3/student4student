@@ -1,0 +1,109 @@
+﻿#senderName {
+    font-weight: 600;
+    /*color: #269dff;*/
+    color: #fff;
+    text-transform: uppercase;
+}
+
+#senderName:hover {
+    color: #fff;
+    font-weight: 800;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.msgHeader {
+    text-align: center;
+}
+
+/*Bubble CSS*/
+#msgs {
+    border: thin solid black;
+    max-height: 400px;
+    overflow-y: auto;
+    width: 100%;
+    border: 1px solid #ccc;
+    font-family: Helvetica, Arial, sans-serif;
+    background-color: white;
+}
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 10px;
+}
+
+ul li {
+    display: inline-block;
+    clear: both;
+    padding: 15px;
+    border-radius: 30px;
+    margin-bottom: 5px;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+.whosaid {
+    /*background: #eee;*/
+    background: #eeeeee;
+    float: left;
+    margin-bottom: 2%;
+    border-top: 5px;
+    border-bottom-left-radius: 5px;
+    color: #000;
+}
+
+.usaid {
+    float: right;
+    /*background: #0084ff;*/
+    background: #009688;
+    color: #fff;
+    margin-bottom: 2%;
+    border-top: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.replyBox {
+    margin-top: 1%;
+    display: inline-block;
+    width: 100%;
+}
+
+#btnSend {
+    background-color: #50b7ad;
+    width: 80px;
+    height: 40px;
+    color: white;
+    border-radius: 20px;
+    border: 2px solid #50b7ad;
+    display: inline;
+    margin-left: 10px;
+}
+
+#btnSend:hover {
+    background-color: white;
+    color: #50b7ad;
+    cursor: pointer;
+}
+
+#reply {
+    overflow: hidden;
+    padding-right: .5em;
+    width: 100%;
+    height: 50px;
+    display: inline;
+    border-radius: 3px;
+
+}
+
+/*message box ids*/
+#nesttop {
+    background-color: #009688;
+}
+
+#nestmiddle {
+    background-color: #f1f1f1;
+}
+
+#nestbottom {
+    background-color: #f1f1f1;
+}

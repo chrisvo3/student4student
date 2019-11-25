@@ -1,0 +1,215 @@
+﻿<div class="ui container">
+    <div class="ui grid centered">
+        <div class="row">
+            <div class="sixteen wide left aligned column">
+                <div class="ui raised secondary segment">
+                    <div class="ui stacked column">
+                        <div class="ui sixteen wide column">
+                            <h3 id="user_username"></h3>
+                        </div>
+                        <div class="ui grid">
+                            <div class="ui eight wide column">
+                                <img src="" id="user_image" height="160px">
+                            </div>
+                            <div class="ui sixteen wide column">
+                            <div class="ui modal MessModal">
+                              <div class="header">Send Message</div>
+                              <div class="content">
+                                <div class="ui form">
+                                  <div class="field">
+                                    <textarea rows="2" id="messageInput"></textarea>
+                                  </div>
+                                </div>
+                                <p></p>
+                                <div class="actions">
+                                    <div class="ui black deny button">
+                                        Nevermind
+                                    </div>
+                                    <div class="ui positive right labeled icon button" onclick="sendMess()">
+                                        Send Message
+                                        <i class="checkmark icon"></i>
+                                    </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="ui modal RateModal">
+                              <div class="header">Rate User</div>
+                              <div class="content">
+                                <div class="ui form">
+                                  <div class="field">
+                                    <div id="rateInput" class="ui massive star rating input rateUser" data-max-rating="5"></div>
+                                  </div>
+                                </div>
+                                <p></p>
+                                <div class="actions">
+                                    <div class="ui black deny button">
+                                        Nevermind
+                                    </div>
+                                    <div class="ui positive right labeled icon button" onclick="sendRate()">
+                                        Rate
+                                        <i class="checkmark icon"></i>
+                                    </div>
+                                </div>
+                              </div>
+                            </div>  
+                                <button class="ui button icon labeled" id="messButt" onclick="openMessModal()">
+                                    <i class="mail icon"></i>
+                                    Send Message
+                                </button>
+                                <button class="ui button icon labeled" id="rateButt" onclick="openRateModal()">
+                                    <i class="edit icon"></i>
+                                    Rate Student
+                                </button>
+                            </div>
+                            <div class="three wide column">
+                                <label>Full Name</label>
+                            </div>
+                            <div class="thirteen wide column">
+                                <label id="user_name"></label>
+                            </div>
+                            <div class="three wide column" id="alt">
+                                <label>University</label>
+                            </div>
+                            <div class="thirteen wide column" id="alt">
+                                <label id="user_university"></label>
+                            </div>
+                            <div class="three wide column">
+                               <label>Average Rating</label>
+                            </div>
+                            <div class="thirteen wide column">
+                                <div id="rating" class="ui star rating avg" data-max-rating="5">
+
+                                </div>
+                            </div>
+                        </div>                       
+                    </div>
+                </div>
+                <div class="ui raised secondary segment">
+                    <div class="sixteen wide column">
+                        <h3 id="getUser"></h3>
+                        <div class="ui container">
+                            <div class="ui grid centered">
+                                <div class="row">
+                                    <div class="sixteen wide column">
+                                        <div class="ui link cards" id="cataCards">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var userFound = {};
+        ViewUserProfile();
+        $(".RateModal").modal({ detachable: false }, { onDeny: function () { $('.RateModal').modal('hide'); } }, { blurring: true });
+        $(".MessModal").modal({ detachable: false }, { onDeny: function () { $('.MessModal').modal('hide'); } }, { blurring: true });
+
+    }); 
+
+    function ViewUserProfile() {
+        GetFiles(["Users.json", "Posts.json"], function() {
+        for (var i = 0; i < Users.length; i++) {
+            if (Users[i].userID == getCookie('userID')) {
+                userFound = Users[i];
+                break;
+            }
+        }
+       
+        document.getElementById("user_university").innerHTML = userFound.university;
+        document.getElementById("user_name").innerHTML = userFound.fullName;
+        document.getElementById("user_username").innerHTML = userFound.username;
+        
+        $("#rating").attr('data-rating', userFound.rating);
+        $("#user_image").attr('src', userFound.profileImageURl);
+
+        console.log(userFound);
+
+        $('.ui.rating').rating('enable');
+        $('.ui.rating.avg').rating('disable');
+
+        getUserPosts();
+        });
+    }
+
+    function getUserPosts() {
+        var userPosts = [];
+        for (var i = 0; i < Posts.length; i++) {
+            if (Posts[i].sellerID == getCookie('userID')) {
+                userPosts.push(Posts[i]);
+            }
+        }
+        if (userPosts.length == 0) {
+            document.getElementById("getUser").innerHTML = userFound.username + "Has nothing for sale:";
+        }
+        else {
+            document.getElementById("getUser").innerHTML = userFound.username + " is also selling:";
+
+            $("#cataCards").empty();
+            for (i = 0; i < userPosts.length; i++) {
+                var card = document.createElement("a");
+                card.className = "ui centered raised blue card";
+                card.id = i;
+                var cataDiv = document.getElementById("cataCards");
+                cataDiv.appendChild(card);
+
+                var image = document.createElement("div");
+                image.className = "image";
+                card.appendChild(image);
+
+                var imageSRC = document.createElement("img");
+                imageSRC.src = "" + Posts[i].imageURL;
+                image.appendChild(imageSRC);
+
+                var content = document.createElement("div");
+                content.className = "content";
+                card.appendChild(content);
+
+                var header = document.createElement("div");
+                header.className = "header";
+                var headerText = document.createTextNode("" + Posts[i].title);
+                header.appendChild(headerText);
+                content.appendChild(header);
+
+                var meta = document.createElement("div");
+                meta.className = "meta";
+                content.appendChild(meta);
+
+                var category = document.createElement("a");
+                var catText = document.createTextNode("" + Posts[i].category.charAt(0).toUpperCase() + Posts[i].category.slice(1));
+                category.appendChild(catText);
+                meta.appendChild(category);
+
+                var description = document.createElement("div");
+                description.className = "description";
+                var descText = document.createTextNode("" + Posts[i].description);
+                description.appendChild(descText);
+                content.appendChild(description);
+
+                var extracontent = document.createElement("div");
+                extracontent.className = "extra content";
+                card.appendChild(extracontent);
+
+                var date = document.createElement("span");
+                date.className = "right floated";
+                var dateText = document.createTextNode("" + Posts[i].datePosted);
+                date.appendChild(dateText);
+                extracontent.appendChild(date);
+
+                var price = document.createElement("span");
+                price.className = "left floated";
+                var priceText = document.createTextNode("$" + Posts[i].price);
+                price.appendChild(priceText);
+                extracontent.appendChild(price);
+            }
+
+        }
+    }
+</script>

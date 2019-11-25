@@ -1,0 +1,82 @@
+﻿<div class="ui container">
+    <div class="ui grid centered">
+        <div class="row">
+            <div class="ten wide computer fifteen wide mobile center aligned column" style="background-color:#f3f4f5; padding-bottom: 20px;">
+
+                <h3 style="padding-top: 20px; padding-bottom:0;">Inbox</h3>
+                <h4 id="msgHeader" style="float:left;"></h4>
+
+                <!--stack messages-->
+
+                <div class="ui middle aligned divided selection list" id="msgBox" style="float:left;">
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(document).ready(function () {
+        LoadInbox();
+    });
+    
+
+    function LoadInbox() {
+        $("#msgBox").empty();
+        var userLoggedIn = JSON.parse(getCookie('user'));
+
+        var cnt = 0;
+        $.get(server + 'api/studenttostudentapi/GetConvosForUser/' + userLoggedIn.userID, function (data) {
+            console.log(data);
+            var convos = data.split('>');
+            for (var i = 0; i < convos.length -1; i++) {
+                var splitConvo = convos[i].split('<');
+
+                var convoID = splitConvo[0];
+                var senderName = splitConvo[1];
+                var message = splitConvo[2];
+                var time = splitConvo[3];
+                var senderImg = splitConvo[4];
+                var delRec = splitConvo[5];
+                var delSend = splitConvo[6];
+                var newMsgRec = splitConvo[7];
+                var newMsgSend = splitConvo[8];
+                var senderID = splitConvo[9];
+                var recID = splitConvo[10];
+                setCookie('senderImg', senderImg, 100);
+
+                var convo = "<div class='item' id='" + convoID + "' > <div class='right floated content'> <div class='ui red button' onclick='DeleteMessage(" + convoID + ")'>Delete</div> </div> <img class='ui avatar image' src='" + senderImg + "'> <div class='content' onclick='OpenConvo(" + convoID + ")'><b>" + senderName + "</b>- <i>" + time + "</i><br/> " + message + " </div></div>";
+
+                document.getElementById('msgBox').innerHTML += convo;
+
+                if (senderID == userLoggedIn.userID && newMsgSend == '1') {
+                    document.getElementById(convoID).style.backgroundColor = "#fcd876";
+
+                    cnt++;
+                }
+
+                else if (recID == userLoggedIn.userID && newMsgRec == '1') {
+                    document.getElementById(convoID).style.backgroundColor = "#fcd876";
+                    cnt++;
+
+                }
+            }
+            msgHeader.innerHTML = "You have " + cnt + " new message(s)";
+
+        });
+
+    }
+
+
+    function OpenConvo(convoID, senderImg) {
+        setCookie('convoID', convoID, 100);
+        LoadPage('dir/html/viewmessage.html');
+    }
+
+    function DeleteMessage(convoID) {
+        $.post(server + 'api/studenttostudentapi/DeleteConversation/avc', convoID + '|' + userLoggedIn.userID, function (data) {
+            LoadInbox();
+        });
+    }
+</script>

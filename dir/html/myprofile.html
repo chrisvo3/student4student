@@ -1,0 +1,587 @@
+﻿<style type="text/css">
+    .content, .title{
+    background-color: whitesmoke; 
+}
+</style>
+<script>
+    var postID = '';
+    $(document).ready(function () {
+        $("#cataCards").empty();
+        getUserInfo();
+        $(".editPostModal").modal({ detachable: false }, { onDeny: function () { $('.ui.modal').modal('hide'); } }, { blurring: true });
+        $('.postCard').click(function () {
+            $('.editPostModal').modal('show');
+           
+            postID = $(this).attr('id');
+            var PostSelected = {};
+            for (var i = 0; i < Posts.length; i++) {
+                if (Posts[i].postID == postID) {
+                    PostSelected = Posts[i];
+                }
+            }
+            document.getElementById("itemName").value = PostSelected.title;
+            document.getElementById("price").value = PostSelected.price;
+            document.getElementById("cat").value = PostSelected.category;
+            document.getElementById("description").innerHTML = PostSelected.description;
+            $("#imgPost").attr('src', PostSelected.imageURL);
+
+
+
+        });
+    });
+
+    function DeletePost() {
+
+        $.ajax({
+            url: server + "api/studenttostudentapi/DeletePost/abc",
+            type: 'POST',
+            data: postID,
+            async: false,
+            cache: false,
+            success: function (result) {
+
+                if (result == "good") {
+
+                    alert("post deleted");
+                    $(".editPostModal").modal('hide all');
+                    getUserPosts();
+
+                } else {
+
+                    alert("error, post not deleted");
+                }
+
+            }
+        });
+    }
+    function getUserInfo() {
+        if (getCookie('user') != '') {
+            var userLoggedIn = JSON.parse(getCookie('user'));
+            $("#myProfileImg").attr('src',JSON.parse(getCookie('user')).profileImageURl);
+            document.getElementById('name').value = userLoggedIn.fullName;
+            document.getElementById('Txtusername').value = userLoggedIn.username;
+            document.getElementById('email').value = userLoggedIn.email;
+            document.getElementById('Txtuniversity').value = userLoggedIn.university;
+            $('.ui.accordion').accordion();
+            getUserPosts();
+        }
+
+        $('.special.cards .image').dimmer({
+            on: 'hover'
+        });
+    }
+    function TriggerFileUpload(val) {
+        $("#"+val).trigger("click");
+
+    }
+
+    function readURL(input,val) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                myProfileImg
+
+                if (val == 'changeProfile') {
+                    $('#myProfileImg').attr('src', e.target.result);
+
+                    $('#myProfileImg').hide();
+                    $('#myProfileImg').fadeIn(650);
+                }
+                else {
+                    $('#imgPost').attr('src', e.target.result);
+
+                    $('#imgPost').hide();
+                    $('#imgPost').fadeIn(650);
+                }
+               
+
+            }
+            reader.readAsDataURL(input.files[0]);
+            var fu = '#' + val;
+            var name = '';
+            if (val == 'changeProfile') {
+
+                name = 'users/' + JSON.parse(getCookie('user')).userID + '.jpg';
+            }
+            else {
+                name = postID + ".png";
+            }
+            alert(name);
+            UploadImages(fu, name);
+        }
+    }
+
+
+
+    function UploadImages(fu, name) {
+
+        files = $(fu).get(0).files;
+
+        if (files[0] != undefined) {
+            var data = new FormData();
+
+
+            data.append("name", name);
+
+            data.append("UploadedImage", files[0]);
+
+
+            var ajaxRequest = $.ajax({
+                type: "POST",
+                url: server + "api/studenttostudentapi/UploadImage/post",
+                contentType: false,
+                processData: false,
+                data: data
+            });
+
+            ajaxRequest.done(function (xhr, textStatus) {
+                if (xhr == "good") {
+                    alert('upload success');
+                }
+                else {
+                    alert("error uploading image");
+
+                }
+            });
+
+
+        }
+
+    }
+
+    function UpdateUser() {
+            if (getCookie('user') != '') {
+               userLoggedIn = JSON.parse(getCookie('user'));
+
+                var userID = userLoggedIn.userID;
+
+                var fullname = document.getElementById('name').value;
+                var username = document.getElementById('Txtusername').value;
+                var university = document.getElementById('Txtuniversity').value;
+                var email = document.getElementById('email').value;
+
+                
+
+    $.ajax({
+        url: server + "api/studenttostudentapi/UpdateUser/abc",
+        type: 'POST',
+        data: userID + "|sep|" + fullname + "|sep|" + email + "|sep|" + username + "|sep|" + university,
+        async: false,
+        cache: false,
+        success: function (result) {
+            if (result != null) {
+                setCookie('user', JSON.stringify(result), 100);
+
+               getUserInfo();
+                alert("Update Success");
+
+            } else {
+
+                alert("error, update failed");
+            }
+
+        }
+    });
+            }
+    }
+    function UpdatePassword() {
+        var curPass = $("#pass").val();
+        var newPass = $("#newPass").val();
+        var newRePass = $("#newRePass").val();
+        if (curPass != "" && curPass != undefined && newPass != "" && newPass != undefined && newRePass != "" && newRePass != undefined) {
+            if (curPass == JSON.parse(getCookie('user')).password) {
+                if (newPass == newRePass) {
+                    $.ajax({
+                        url: server + "api/studenttostudentapi/UpdatePassword/abc",
+                        type: 'POST',
+                        data: JSON.parse(getCookie('user')).userID + "|sep|" + newRePass,
+                        async: false,
+                        cache: false,
+                        success: function (result) {
+                            if (result != null) {
+                                setCookie('user', JSON.stringify(result), 100);
+
+                                getUserInfo();
+                                alert("Update Success");
+
+                            } else {
+
+                                alert("error, update failed");
+                            }
+
+                        }
+                    });
+                  }
+                else{
+                    alert('New password must match confirm password');
+
+                }
+            }
+            else {
+                alert("Current password must match");
+            }
+        }
+        else {
+            alert('passwords field must be filled');
+        }
+    }
+</script>
+
+<div class="ui container" >
+    <div class="ui grid centered">
+        <input type="file" onchange="readURL(this, 'changeProfile')" id="changeProfile" accept="image/*" hidden>
+        <input type="file" onchange="readURL(this, 'changePost')" id="changePost" accept="image/*" hidden>
+
+        <div class="row">
+            <div class="sixteen wide left aligned column">
+                <div class="ui raised secondary segment">
+                    <div class="ui stacked column">
+                        <h3>My Profile</h3>
+                        <div class="ui grid">
+                            <div class="sixteen wide column">
+                                <div class="ui special cards ">
+                                    <a class="card" style="width:160px;">
+                                        <div class="blurring dimmable small image">
+                                            <div class="ui dimmer">
+                                                <div class="content">
+                                                    <div class="center">
+                                                        <button class="ui inverted blue labeled icon button" onclick="TriggerFileUpload('changeProfile')">
+                                                            <i class="upload icon"></i>
+                                                            Upload
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <img id="myProfileImg" class="itemImage">
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="ui styled fluid accordion">
+                                <div class="active title">
+                                    <i class="dropdown icon"></i>
+                                    Name
+                                   
+                                </div>
+                                <div class="active content">
+                                    <div class="ui input">
+                                        <input type="text" id="name">
+                                    </div>  
+                                    <button class="ui inverted blue labeled icon button" onclick="UpdateUser()">
+                                        <i class="upload icon"></i>
+                                        Update
+                                    </button>
+                                </div>
+                                <div class="title">
+                                    <i class="dropdown icon"></i>
+                                    Username
+                                </div>
+                                <div class="content">
+                                    <div class="ui input">
+                                        <input type="text" id="Txtusername">
+                                    </div>
+                                    <button class="ui inverted blue labeled icon button" onclick="UpdateUser()">
+                                        <i class="upload icon"></i>
+                                        Update
+                                    </button>
+                                  </div>
+                                <div class="title">
+                                    <i class="dropdown icon"></i>
+                                    Email
+                                </div>
+                                <div class="content">
+                                    <div class="ui input">
+                                        <input type="text" id="email" disabled="disabled">
+                                    </div>
+                                   </div>
+                                <div class="title">
+                                    <i class="dropdown icon"></i>
+                                    University
+                                </div>
+                                <div class="content">
+                                    <div class="ui input">
+                                        <input type="text" id="Txtuniversity">
+                                    </div>
+                                    <button class="ui inverted blue labeled icon button" onclick="UpdatePassword()">
+                                        <i class="upload icon"></i>
+                                        Update
+                                    </button>
+                                </div>
+                                <div class="title">
+                                    <i class="dropdown icon"></i>
+                                    password
+                                </div>
+                                <div class="content">
+                                    <div class="ui input">
+                                        <input type="password" id="pass" placeholder="Current Password">
+                                    </div>
+                                    <br/>
+                                       <div class="ui input">
+                                        <input type="password" id="newPass" placeholder="New Password">
+                                    </div>
+                                    <br />
+                                    <div class="ui input">
+                                        <input type="password" id="newRePass" placeholder="Confirm New Password">
+                                    </div>
+                                    <br/>
+                                    <br/>
+                                    <button class="ui inverted blue labeled icon button" onclick="UpdatePassword()">
+                                        <i class="upload icon"></i>
+                                        Update
+                                    </button>
+                                </div>
+                                <div class="title">
+                                    <i class="dropdown icon"></i>
+                                    My Posts
+                                </div>
+                                <div class="content">
+                               <div id="allPosts">
+                                   <h3 id="noPosts"></h3>
+                                   <!--ALL MY POSTS GO HERE DYNAMICALLY-->
+                                   <div class="ui raised secondary segment">
+                                       <div class="sixteen wide column">
+                                           <h3 id="getUser"></h3>
+                                           <div class="ui container">
+                                               <div class="ui grid centered">
+                                                   <div class="row">
+                                                       <div class="sixteen wide column">
+                                                           <div class="ui link cards" id="cataCards">
+
+                                                           </div>
+
+                                                       </div>
+                                                   </div>
+                                               </div>
+                                           </div>
+                                       </div>
+                                   </div>
+                               </div>
+                                </div>
+                            </div>
+                        
+
+
+
+
+
+                            <div class="ui modal editPostModal">
+                                <i style="visibility:hidden" class="sellerID" id=""></i>
+                                <i class="close icon"></i>
+                                <div class="header">
+                                    Edit Post
+                                </div>
+                                <div class="image content">
+                                    <div class="ui medium image">
+                                        <div class="ui special cards ">
+                                            <a class="card" style="width:160px;">
+                                                <div class="blurring dimmable small image">
+                                                    <div class="ui dimmer">
+                                                        <div class="content">
+                                                            <div class="center">
+                                                                <button class="ui inverted blue labeled icon button" onclick="TriggerFileUpload('changePost')">
+                                                                    <i class="upload icon"></i>
+                                                                    Upload
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <img id="imgPost" class="itemImage" style="width:226px;height:169px;">
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <script>
+                                        function UpdatePost() {
+                                            var title = document.getElementById("itemName").value;
+                                            var price = document.getElementById("price").value;
+                                            var cat = document.getElementById("cat").value;
+                                            var description = document.getElementById("description").value;
+
+                                            if (title != "" && price != "" && cat != "" && description != "") {
+                                                var data = postID + "|sep|" + title + "|sep|" + price + "|sep|" + description + "|sep|" + cat;
+                                                $.ajax({
+                                                    url: server + "api/studenttostudentapi/EditPost/abc",
+                                                    type: 'POST',
+                                                    data: data,
+                                                    async: false,
+                                                    cache: false,
+                                                    success: function (result) {
+                                                        if (result != null) {
+                                                            
+                                                            alert("Update Success");
+
+                                                        } else {
+
+                                                            alert("error, update failed");
+                                                        }
+
+                                                    }
+                                                });
+                                            }
+                                            else {
+                                                alert("Can't leave anything empty");
+                                            }
+                                        }
+                                    </script>
+                                        <div class="ui styled fluid accordion">
+                                            <div class="active title">
+                                                <i class="dropdown icon"></i>
+                                                Item Name
+                                            </div>
+                                            <div class="active content">
+                                                <div class="ui input">
+                                                    <input type="text" id="itemName">
+                                                </div>
+                                                <button class="ui inverted blue labeled icon button" onclick="UpdatePost()">
+                                                    <i class="upload icon"></i>
+                                                    Update
+                                                </button>
+                                            </div>
+                                            <div class="title">
+                                                <i class="dropdown icon"></i>
+                                                Price
+                                            </div>
+                                            <div class="content">
+                                                <div class="ui input">
+                                                    <input type="text" id="price">
+                                                </div>
+                                                <button class="ui inverted blue labeled icon button" onclick="UpdatePost()">
+                                                    <i class="upload icon"></i>
+                                                    Update
+                                                </button>
+                                            </div>
+                                            <div class="title">
+                                                <i class="dropdown icon"></i>
+                                                Category
+                                            </div>
+                                            <div class="content">
+                                                <div class="ui input">
+                                                    <input type="text" id="cat">
+                                                </div>
+                                                <button class="ui inverted blue labeled icon button" onclick="UpdatePost()">
+                                                    <i class="upload icon"></i>
+                                                    Update
+                                                </button>
+                                            </div>
+                                            <div class="title">
+                                                <i class="dropdown icon"></i>
+                                                Description
+                                            </div>
+                                            <div class="content">
+                                                <textarea id="description" style="overflow:hidden;border-radius:6px;color:black;width:100%;height:75px;"></textarea>
+                                                <button class="ui inverted blue labeled icon button" onclick="UpdatePost()">
+                                                    <i class="upload icon"></i>
+                                                    Update
+                                                </button>
+                                            </div>
+
+
+                                        </div>
+
+                                   
+                                    <br />
+                                 
+
+                                </div>
+                                <div class="actions">
+                                    <div class="ui black deny button">
+                                        Nevermind
+                                    </div>
+                                    <div class="ui red  button" onclick="DeletePost()">
+                                        Delete Post
+                                    </div>
+                                </div>
+                            </div>
+                                </div>
+                           
+                        <script>
+                       
+                       
+
+    function getUserPosts() {
+        $("#cataCards").empty();
+        var userPosts = [];
+        for (var i = 0; i < Posts.length; i++) {
+            if (Posts[i].sellerID == JSON.parse(getCookie('user')).userID) {
+                userPosts.push(Posts[i]);
+            }
+        }
+        if (userPosts.length == 0) {
+            document.getElementById("noPosts").innerHTML = userLoggedIn.username + "You Have No Posts";
+        }
+        else {
+          
+            for (i = 0; i < userPosts.length; i++) {
+                var card = document.createElement("a");
+                card.className = "ui centered raised blue card postCard";
+               
+                card.id = userPosts[i].postID;
+                var cataDiv = document.getElementById("cataCards");
+                cataDiv.appendChild(card);
+
+                var image = document.createElement("div");
+                image.className = "image";
+                card.appendChild(image);
+
+                var imageSRC = document.createElement("img");
+                imageSRC.src = "" + userPosts[i].imageURL;
+                image.appendChild(imageSRC);
+
+                var content = document.createElement("div");
+                content.className = "content";
+                card.appendChild(content);
+
+                var header = document.createElement("div");
+                header.className = "header";
+                var headerText = document.createTextNode("" + userPosts[i].title);
+                header.appendChild(headerText);
+                content.appendChild(header);
+
+                var meta = document.createElement("div");
+                meta.className = "meta";
+                content.appendChild(meta);
+
+                var category = document.createElement("a");
+                var catText = document.createTextNode("" + userPosts[i].category.charAt(0).toUpperCase() + userPosts[i].category.slice(1));
+                category.appendChild(catText);
+                meta.appendChild(category);
+
+                var description = document.createElement("div");
+                description.className = "description";
+                var descText = document.createTextNode("" + userPosts[i].description);
+                description.appendChild(descText);
+                content.appendChild(description);
+
+                var extracontent = document.createElement("div");
+                extracontent.className = "extra content";
+                card.appendChild(extracontent);
+
+                var date = document.createElement("span");
+                date.className = "right floated";
+                var dateText = document.createTextNode("" + userPosts[i].datePosted);
+                date.appendChild(dateText);
+                extracontent.appendChild(date);
+
+                var price = document.createElement("span");
+                price.className = "left floated";
+                var priceText = document.createTextNode("$" + userPosts[i].price);
+                price.appendChild(priceText);
+                extracontent.appendChild(price);
+            }
+
+        }
+    }
+
+
+
+  
+                        </script>
+                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,50 @@
+<script src="dir/js/login.js"></script>
+<div class="ui container">
+    <div class="ui grid centered">
+        <div class="row">
+            <div class="ten wide computer fifteen wide mobile center aligned column">
+              <img class="ui small centered image" src="StudentToStudentLogo.png">
+              <h2 class="ui image header">
+                <div class="content">
+                  Log-in to your account
+                </div>
+              </h2>
+            </div>
+          </div>
+              <div class="row"  id="loginForm">
+                <div class="ten wide computer fifteen wide mobile center aligned column">
+                <div class="ui stacked secondary segment">
+                  <div class="field">
+                    <div class="ui fluid left icon input">
+                      <i class="user icon"></i>
+                      <input type="text" name="email" id="email" placeholder="E-mail address">
+                    </div>
+                  </div>
+                  <br>
+                  <div class="field">
+                    <div class="ui fluid left icon input">
+                      <i class="lock icon"></i>
+                      <input type="password" name="password" id="password" onkeydown="if (event.keyCode == 13){document.getElementById('btn').click()}" placeholder="Password">
+                    </div>
+                  </div>
+                    <img src="../../loading.gif" id="loading" style="width: 100px;" hidden /><br />
+                  <div class="ui large teal button" id="btn" onclick="submit()" >Login</div>
+                </div>
+              </div>
+              </div>
+              <div class="row">
+              <div class="ui message">
+              New to us? <a class="item loginLink" onclick="LoadPage('dir/html/register.html')" >Register</a>
+              </div>
+            </div>
+        </div>
+            <div class="row">
+                <div id="loginVerify" style="visibility:hidden">
+                    <center>
+                        <h2>Before logging in you must verify your email.<span id="verify"></span></h2>
+                    </center>
+                </div>
+            </div>
+    </div>
+</div>
+<!--<button onclick="callAPI()">click</button>-->
